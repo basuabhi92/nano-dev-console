@@ -3,56 +3,26 @@
 <head>
     <meta charset="UTF-8" />
     <title>Dev Console</title>
-    <style>
-        body {
-            font-family: sans-serif;
-            background-color: #f8f9fa;
-            margin: 0;
-            padding: 1rem;
-        }
-        h1 {
-            color: #343a40;
-        }
-        pre {
-            background-color: #ffffff;
-            border: 1px solid #dee2e6;
-            padding: 1rem;
-            overflow-x: auto;
-        }
-    </style>
+    <link rel="stylesheet" href="./style.css">
 </head>
 <body>
 <h1>Dev Console</h1>
+
 <h2>System Info</h2>
 <pre id="system"></pre>
-<h2>Recent Events</h2>
-<pre id="events"></pre>
 
-<script>
-    async function fetchJson(url) {
-        const response = await fetch(url);
-        if (!response.ok) {
-            throw new Error(`Failed to fetch ${url}: ${response.status}`);
-        }
-        return await response.json();
-    }
+<div class="tabs">
+    <div class="tab active" data-tab="events">Events</div>
+    <div class="tab" data-tab="logs">Logs</div>
+</div>
 
-    async function loadData() {
-        try {
-            const [systemInfo, eventData] = await Promise.all([
-                fetchJson('/dev-console/system-info'),
-                fetchJson('/dev-console/events')
-            ]);
+<div id="events" class="tab-content active">
+    <pre id="eventsData"></pre>
+</div>
+<div id="logs" class="tab-content">
+    <pre id="logsData"></pre>
+</div>
 
-            document.getElementById("system").textContent = JSON.stringify(systemInfo, null, 2);
-            document.getElementById("events").textContent = JSON.stringify(eventData, null, 2);
-        } catch (e) {
-            console.error("Error loading data:", e);
-        }
-    }
-
-    loadData();
-    setInterval(loadData, 5000); // refresh every 5 seconds
-</script>
+<script src="./script.js"></script>
 </body>
 </html>
