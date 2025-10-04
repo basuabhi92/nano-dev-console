@@ -1,14 +1,15 @@
-/*package org.nanonative.ab.devconsole;
+/*package org.nanonative.devconsole;
 
-import org.nanonative.ab.devconsole.service.DevConsoleService;
+import org.nanonative.devconsole.service.DevConsoleService;
 import org.nanonative.nano.core.Nano;
 import org.nanonative.nano.services.http.HttpServer;
+import org.nanonative.nano.services.metric.logic.MetricService;
 
 import java.util.Map;
 
-import static org.nanonative.ab.devconsole.service.DevConsoleService.CONFIG_DEV_CONSOLE_MAX_EVENTS;
-import static org.nanonative.ab.devconsole.service.DevConsoleService.CONFIG_DEV_CONSOLE_MAX_LOGS;
-import static org.nanonative.ab.devconsole.service.DevConsoleService.CONFIG_DEV_CONSOLE_URL;
+import static org.nanonative.devconsole.service.DevConsoleService.CONFIG_DEV_CONSOLE_MAX_EVENTS;
+import static org.nanonative.devconsole.service.DevConsoleService.CONFIG_DEV_CONSOLE_MAX_LOGS;
+import static org.nanonative.devconsole.service.DevConsoleService.CONFIG_DEV_CONSOLE_URL;
 import static org.nanonative.nano.services.http.HttpServer.CONFIG_SERVICE_HTTP_PORT;
 
 public class Main {

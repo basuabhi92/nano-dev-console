@@ -438,3 +438,88 @@ document.addEventListener("DOMContentLoaded", () => {
     if (target) setTimeout(close, 0);
   });
 })();
+
+// === Service shutdown confirm flow ===
+// - Service names render inside #system as .tag elements, in order.
+// - Index to send is zero-based in the order they appear.
+
+(function () {
+  const sysEl = document.getElementById('system');
+  if (!sysEl) return;
+
+  // Elements for modal + toast
+  const modal = document.getElementById('confirmModal');
+  const modalTextSvc = modal?.querySelector('.svc-name');
+  const btnOk = document.getElementById('confirmOk');
+  const btnCancel = document.getElementById('confirmCancel');
+  const globalToast = document.getElementById('globalToast');
+
+  let pending = { index: null, name: null };
+
+  function showModal(svcName, svcIndex) {
+    pending = { index: svcIndex, name: svcName };
+    if (modalTextSvc) modalTextSvc.textContent = svcName;
+    modal?.classList.add('show');
+    // focus the destructive CTA for quick keyboard flow
+    btnOk?.focus();
+  }
+  function hideModal() {
+    modal?.classList.remove('show');
+    pending = { index: null, name: null };
+  }
+  function showGlobalToastMsg(msg, isError = false) {
+    if (!globalToast) return;
+    globalToast.textContent = msg;
+    globalToast.classList.toggle('error', !!isError);
+    globalToast.classList.add('show');
+    setTimeout(() => globalToast.classList.remove('show'), 2400);
+  }
+
+  // Find service elements: any #system .tag (keeps your current visuals)
+  function collectServiceTags() {
+    return Array.from(sysEl.querySelectorAll('.tag'));
+  }
+
+  // Delegate clicks on #system .tag items
+  sysEl.addEventListener('click', (ev) => {
+    const tag = ev.target.closest('.tag');
+    if (!tag || !sysEl.contains(tag)) return;
+
+    const tags = collectServiceTags();
+    const idx = tags.indexOf(tag);
+    if (idx < 0) return;
+
+    const svcName = (tag.textContent || '').trim();
+    if (!svcName) return;
+
+    showModal(svcName, idx);
+  });
+
+  // Modal close handlers
+  modal?.addEventListener('click', (e) => {
+    if (e.target?.dataset?.close === 'true') hideModal();
+  });
+  btnCancel?.addEventListener('click', hideModal);
+
+  // Confirm => call backend
+  btnOk?.addEventListener('click', async () => {
+    const { index, name } = pending;
+    if (index == null) return;
+
+    const url = `/dev-console/service/${encodeURIComponent(name)}`;
+
+    try {
+      const res = await fetch(url, { method: 'DELETE' });
+      hideModal();
+
+      if (res.ok) {
+        showGlobalToastMsg(`${name} shutting down...`, false);
+      } else {
+        showGlobalToastMsg(`Operation failed`, true);
+      }
+    } catch (err) {
+      hideModal();
+      showGlobalToastMsg(`Operation failed`, true);
+    }
+  });
+})();
